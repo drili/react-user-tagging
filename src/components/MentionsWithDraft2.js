@@ -28,10 +28,12 @@ const SimpleMentionEditor = () => {
     }, []);
 
     const MentionEntry = (props) => {
-        const { ...parentProps } = props
+        // Destructure out the specific props and spread the rest
+        const { isFocused, searchValue, selectMention, ...parentProps } = props;
+    
         return (
             <div {...parentProps} className="mentionEntry">
-                <img src={props.mention.avatar} />
+                <img src={props.mention.avatar} alt={props.mention.name} />
                 <span>{props.mention.name}</span>
             </div>
         );
@@ -60,8 +62,8 @@ const SimpleMentionEditor = () => {
                 onAddMention={() => {
                     // get the mention object selected
                 }}
-                popoverContainer={({ children }) => <div>{children}</div>}
-            // onAddMention={() => { /* handle mention addition */ }}
+                // popoverContainer={({ children }) => <div>{children}</div>}
+                // onAddMention={() => { /* handle mention addition */ }}
             />
         </div>
     );

@@ -1,6 +1,6 @@
 .mentionEntry {
     /* Custom styles for each entry */
-    padding: 5px;
+    padding: 10px;
     border-bottom: 1px solid #eee;
     cursor: pointer;
     display: flex;
