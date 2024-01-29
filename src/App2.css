@@ -1,0 +1,22 @@
+.mentionEntry {
+    /* Custom styles for each entry */
+    padding: 5px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    /* background-color: red; */
+}
+
+.mentionEntry img {
+    max-width: 25px;
+    max-height: 25px;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 100%;
+}
+
+.mentionEntry:hover {
+    background-color: #f0f0f0;
+}

@@ -32,6 +32,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -43,4 +44,25 @@
   padding: 0 2px;
   margin: 0;
   display: inline;
+}
+
+.mentionSuggestions {
+  display: flex !important;
+  text-align: left !important;
+  background-color: red !important;
+}
+
+.mentionSuggestions {
+  border-top: 1px solid #eee;
+  background: #fff;
+  border-radius: 2px;
+  cursor: pointer;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  transform-origin: 50% 0%;
+  transform: scaleY(0);
+  margin: -16px;
 }

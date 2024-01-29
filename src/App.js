@@ -4,7 +4,7 @@ import './App.css';
 import MyEditor from './components/MyEditor';
 import MyMentionsInput from './components/MentionsEditor';
 import MyRichTextEditor from './components/MentiosWithDraft';
-import SimpleMentionEditor from './components/MentionsWithDraft2.tsx';
+import SimpleMentionEditor from './components/MentionsWithDraft2';
 
 function App() {
 	return (
