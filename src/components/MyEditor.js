@@ -1,36 +1,19 @@
 // MyEditor.js
 import React, { useState, useEffect } from 'react';
-import { Editor, EditorState, Modifier, SelectionState, CompositeDecorator } from 'draft-js';
+import { Editor, EditorState, Modifier, SelectionState, RichUtils } from 'draft-js';
 
 const MyEditor = () => {
-    const findTaggedUsers = (contentBlock, callback, contentState) => {
-        contentBlock.findEntityRanges(
-            (character) => {
-                const entityKey = character.getEntity();
-                return (
-                    entityKey !== null &&
-                    contentState.getEntity(entityKey).getType() === 'TAGGED_USER'
-                );
-            },
-            callback
-        );
-    };
-    
-    const TaggedUser = (props) => {
-        return <strong>{props.children}</strong>;
-    };
-    
-    const decorator = new CompositeDecorator([
-        {
-            strategy: findTaggedUsers,
-            component: TaggedUser,
-        },
-    ]);
-    
-    const [editorState, setEditorState] = useState(EditorState.createEmpty(decorator));
+    const [editorState, setEditorState] = useState(EditorState.createEmpty());
     const [suggestions, setSuggestions] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [search, setSearch] = useState('');
+
+    const styleMap = {
+        'HIGHLIGHT': {
+            backgroundColor: 'beige',
+            fontWeight: 'bold',
+        },
+    };
 
     const handleBeforeInput = (chars) => {
         const selection = editorState.getSelection();
@@ -39,13 +22,13 @@ const MyEditor = () => {
         const currentBlock = currentContent.getBlockForKey(anchorKey);
         const start = selection.getStartOffset();
         const text = currentBlock.getText().slice(0, start) + chars;
-    
+
         if (text.endsWith('@')) {
             setShowSuggestions(true);
             setSearch('@');
             // return 'handled';
         }
-    
+
         if (showSuggestions) {
             if (chars === ' ') {
                 setShowSuggestions(false);
@@ -55,7 +38,7 @@ const MyEditor = () => {
             }
             // return 'handled';
         }
-    
+
         return 'not-handled';
     };
 
@@ -68,29 +51,61 @@ const MyEditor = () => {
     };
 
     const selectSuggestion = (suggestion) => {
-        const currentContent = editorState.getCurrentContent();
-        const selection = editorState.getSelection();
-    
+        let currentContent = editorState.getCurrentContent();
+        let selection = editorState.getSelection();
+
+        // Calculate the start offset for the replacement
         const startOffset = selection.getStartOffset() - search.length;
-        const endOffset = startOffset + search.length;
-    
-        const textSelection = selection.merge({
+
+        // Define a selection state for the text to be replaced
+        const replacementSelection = selection.merge({
             anchorOffset: startOffset,
-            focusOffset: endOffset,
+            focusOffset: selection.getStartOffset(),
         });
-    
-        const textWithSuggestion = `@${suggestion} `;
-        const newContentState = Modifier.replaceText(
+
+        // Insert the suggestion text with a trailing space
+        const textWithSuggestion = `@${suggestion}`;
+        currentContent = Modifier.replaceText(
             currentContent,
-            textSelection,
+            replacementSelection,
             textWithSuggestion
         );
-    
-        const newEditorState = EditorState.push(editorState, newContentState, 'insert-characters');
-        setEditorState(EditorState.forceSelection(newEditorState, newContentState.getSelectionAfter()));
+
+        // Apply the 'HIGHLIGHT' style to the suggestion text only
+        const styledSelection = replacementSelection.merge({
+            focusOffset: startOffset + textWithSuggestion.length,
+        });
+        currentContent = Modifier.applyInlineStyle(
+            currentContent,
+            styledSelection,
+            'HIGHLIGHT'
+        );
+
+        // Insert a space after the styled text
+        const spaceSelection = styledSelection.merge({
+            anchorOffset: styledSelection.getFocusOffset(),
+            focusOffset: styledSelection.getFocusOffset(),
+        });
+        currentContent = Modifier.insertText(
+            currentContent,
+            spaceSelection,
+            ' '
+        );
+
+        // Update the editor state with the styled text and space
+        let newEditorState = EditorState.push(
+            editorState,
+            currentContent,
+            'change-inline-style'
+        );
+
+        // Move the cursor to the position after the space
+        newEditorState = EditorState.forceSelection(newEditorState, currentContent.getSelectionAfter());
+
+        setEditorState(newEditorState);
         setShowSuggestions(false);
         setSearch('');
-    };     
+    };
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -103,7 +118,7 @@ const MyEditor = () => {
                 ));
             }
         };
-    
+
         if (search.startsWith('@')) {
             fetchUsers();
         } else {
@@ -114,11 +129,13 @@ const MyEditor = () => {
     return (
         <div style={{ border: '1px solid black', padding: '10px' }}>
             <Editor
+                customStyleMap={styleMap}
                 editorState={editorState}
                 onChange={setEditorState}
                 handleBeforeInput={handleBeforeInput}
                 handleKeyCommand={handleKeyCommand}
             />
+
             {showSuggestions && suggestions.length > 0 && (
                 <div style={{ border: '1px solid grey', padding: '5px' }}>
                     {suggestions.map((suggestion, index) => (
