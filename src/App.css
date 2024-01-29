@@ -36,3 +36,11 @@
     transform: rotate(360deg);
   }
 }
+
+.mention {
+  background-color: beige;
+  font-weight: bold;
+  padding: 0 2px;
+  margin: 0;
+  display: inline;
+}
