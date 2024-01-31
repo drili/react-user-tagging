@@ -38,6 +38,36 @@ const SimpleMentionEditor = () => {
         );
     };
 
+    // *** User handling from mentions
+    const extractMentions = (editorState) => {
+        const contentState = editorState.getCurrentContent();
+        const mentionedUsers = [];
+
+        contentState.getBlockMap().forEach((block) => {
+            block.findEntityRanges(
+                (character) => {
+                    const entityKey = character.getEntity();
+                    return (
+                        entityKey !== null &&
+                        contentState.getEntity(entityKey).getType() === 'mention'
+                    );
+                },
+                (start, end) => {
+                    const entityKey = block.getEntityAt(start);
+                    const mentionData = contentState.getEntity(entityKey).getData();
+                    mentionedUsers.push(mentionData.mention);
+                }
+            );
+        });
+
+        return mentionedUsers;
+    }
+
+    const handleSendComment = () => {
+        const mentionedUsers = extractMentions(editorState)
+        console.log("Mentioned users:", mentionedUsers);
+    }
+
     return (
         <div
             style={{ border: '1px solid black', padding: '10px' }}
@@ -64,6 +94,10 @@ const SimpleMentionEditor = () => {
                 // popoverContainer={({ children }) => <div>{children}</div>}
                 // onAddMention={() => { /* handle mention addition */ }}
             />
+
+            <div style={{ marginTop: "100px" }}>
+                <button onClick={handleSendComment} type='button'>handleSendComment</button>
+            </div>
         </div>
     );
 };

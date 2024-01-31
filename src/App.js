@@ -9,14 +9,13 @@ import SimpleMentionEditor from './components/MentionsWithDraft2';
 function App() {
 	return (
 		<div className="App">
-			<h1>Hello</h1>
-
-			<MyEditor />
+			{/* <h1>Custom Solution:</h1>
+			<MyEditor /> */}
 
 			<hr />
 
-			<h1>React Mentions Example</h1>
-			<MyMentionsInput />
+			{/* <h1>React Mentions Example</h1>
+			<MyMentionsInput /> */}
 
 			<hr />
 
