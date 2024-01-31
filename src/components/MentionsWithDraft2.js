@@ -28,7 +28,6 @@ const SimpleMentionEditor = () => {
     }, []);
 
     const MentionEntry = (props) => {
-        // Destructure out the specific props and spread the rest
         const { isFocused, searchValue, selectMention, ...parentProps } = props;
     
         return (
